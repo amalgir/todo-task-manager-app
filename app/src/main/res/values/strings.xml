@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ToDo Task Manager</string>
+    <string name="plusButtonText">+</string>
 </resources>
