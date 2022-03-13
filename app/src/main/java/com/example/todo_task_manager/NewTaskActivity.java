@@ -111,7 +111,7 @@ public class NewTaskActivity extends AppCompatActivity {
     private void setTaskInfo(String[] stringArray){
         if (stringArray.length > 0){
             for (String s : stringArray) {
-                taskList.add(new TaskCategory('\u23FA' + "    " + s));
+                taskList.add(new TaskCategory('\u25cf' + "    " + s));
             }
         }
     }
