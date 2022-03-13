@@ -22,6 +22,7 @@
         android:layout_height="55dp"
         android:layout_marginBottom="36dp"
         android:background="@drawable/round_button"
+        android:onClick="launchNewTaskActivity"
         android:text="@string/plusButtonText"
         android:textColor="@color/black"
         android:textSize="27sp"

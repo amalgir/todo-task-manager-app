@@ -7,8 +7,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ClipData;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-
+    public void launchNewTaskActivity(View view){
+        Intent intent = new Intent(this, NewTaskActivity.class);
+        startActivity(intent);
+    }
     
 }
