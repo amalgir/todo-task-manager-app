@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ToDo Task Manager</string>
     <string name="plusButtonText">+</string>
+    <string name="TaskCategoryHint">Enter Task Title..</string>
+    <string name="TaskHint">Enter Task..</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
 </resources>
