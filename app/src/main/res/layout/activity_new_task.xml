@@ -41,7 +41,7 @@
         android:layout_width="389dp"
         android:layout_height="49dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="21dp"
         android:layout_marginEnd="6dp"
         android:layout_marginBottom="594dp"
         android:ems="10"
@@ -61,22 +61,54 @@
     <TextView
         android:id="@+id/taskCategoryTextView"
         android:layout_width="389dp"
-        android:layout_height="49dp"
+        android:layout_height="77dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="23dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="594dp"
         android:ems="10"
-        android:text="test data"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newTaskToolbar" />
 
+    <EditText
+        android:id="@+id/editTextTaskList"
+        android:layout_width="367dp"
+        android:layout_height="564dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/edittasksbackground"
+        android:ems="10"
+        android:hint="@string/TaskHint"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:autofillHints="username"
+        android:textColorHint="@color/white"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskCategoryEditText" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/TaskListRecyclerView"
+        android:layout_width="396dp"
+        android:layout_height="590dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskCategoryTextView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
