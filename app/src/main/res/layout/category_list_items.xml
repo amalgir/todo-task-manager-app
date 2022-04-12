@@ -17,6 +17,7 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="7dp"
         android:text="Task Category"
+        android:onClick="launchDisplayTaskActivity"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="normal"

@@ -8,9 +8,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +20,8 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<TaskCategory> taskCategoryList;
     private RecyclerView recyclerView;
+    public static boolean newTaskMode = false;
+    public static String currentCategoryString = "";
     DataBaseHelper dataBaseHelper;
 
     @Override
@@ -73,8 +77,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchNewTaskActivity(View view){
+        MainActivity.newTaskMode = true;
         Intent intent = new Intent(this, NewTaskActivity.class);
         startActivity(intent);
     }
-    
+
+    public void launchDisplayTaskActivity(View view){
+        MainActivity.newTaskMode = false;
+        currentCategoryString = ((TextView) view).getText().toString();
+        Intent intent = new Intent(this, NewTaskActivity.class);
+        startActivity(intent);
+    }
+
+
 }

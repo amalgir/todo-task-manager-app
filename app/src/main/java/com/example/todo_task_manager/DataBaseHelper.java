@@ -150,5 +150,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
 
+    /****************************************************************
+     FunctionName    :
+     Description     :
+     InputParameters :
+     Return          :
+     ********************************************************************/
+
+    public List<String> getTasks(String taskCategoryString){
+        List<String> returnList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        String queryString = String.format("SELECT %s FROM %s WHERE %s=\"%s\"", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_CATEGORY, taskCategoryString);
+        System.out.println("GET TASKS: " + queryString);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        if (cursor.moveToFirst()){
+            do{
+                returnList.add(cursor.getString(0));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnList;
+    }
 
 }

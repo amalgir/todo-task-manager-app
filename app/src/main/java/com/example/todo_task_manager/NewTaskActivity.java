@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,15 +25,17 @@ public class NewTaskActivity extends AppCompatActivity {
     private TextView newCategoryTextView;
     private EditText newCategoryEditText;
     private EditText taskEditText;
-    private boolean editVisible = false;
+    private boolean editVisible = !MainActivity.newTaskMode;
     private ArrayList<TaskCategory> taskList;
     private RecyclerView taskRecyclerView;
     private DataBaseHelper dataBaseHelper;
+    private boolean newTaskMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
+        newTaskMode = MainActivity.newTaskMode;
 
         Toolbar toolbar = findViewById(R.id.newTaskToolbar);
         setSupportActionBar(toolbar);
@@ -42,8 +46,12 @@ public class NewTaskActivity extends AppCompatActivity {
         taskRecyclerView = findViewById(R.id.TaskListRecyclerView);
         dataBaseHelper = new DataBaseHelper(this);
 
-        initializeElementVisibility();
+        setVisibilityMode(newTaskMode);
+        if(!newTaskMode){
+            setTextForTextViews();
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
@@ -64,18 +72,12 @@ public class NewTaskActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.editMenu){
-            newCategoryEditText.setVisibility(View.VISIBLE);
-            taskEditText.setVisibility(View.VISIBLE);
-            newCategoryTextView.setVisibility(View.GONE);
-            taskRecyclerView.setVisibility(View.GONE);
+            setVisibilityMode(true);
             editVisible = false;
             invalidateOptionsMenu();
         }
         else if (itemId == R.id.saveMenu){
-            newCategoryEditText.setVisibility(View.GONE);
-            taskEditText.setVisibility(View.GONE);
-            newCategoryTextView.setVisibility(View.VISIBLE);
-            taskRecyclerView.setVisibility(View.VISIBLE);
+            setVisibilityMode(false);
             editVisible = true;
             saveTasks();
             invalidateOptionsMenu();
@@ -84,23 +86,16 @@ public class NewTaskActivity extends AppCompatActivity {
         return true;
     }
 
-    public void initializeElementVisibility(){
-        newCategoryEditText.setVisibility(View.VISIBLE);
-        newCategoryTextView.setVisibility(View.GONE);
-    }
 
     public void saveTasks(){
         // Getting tasks entered by user
         String taskCategoryText = newCategoryEditText.getText().toString();
         String taskText = taskEditText.getText().toString();
         // Setting text in textView
-        System.out.println(taskCategoryText);
-        System.out.println(taskText);
         newCategoryTextView.setText(taskCategoryText);
         // Setting tasks in recycler view
         taskList = new ArrayList<>();
         String[] taskArray =  taskText.split("\n",20);
-        setTaskInfo(taskArray);
 
         // INSERTING DATA INTO DATABASE
         if ((taskCategoryText.length() >1) & (taskText.length() > 1)) {
@@ -110,6 +105,9 @@ public class NewTaskActivity extends AppCompatActivity {
             }
         }
 
+        // FETCHING DATA FROM DATABASE AND DISPLAYING
+        List<String> DBTasksList = dataBaseHelper.getTasks(taskCategoryText);
+        setTaskInfo(DBTasksList);
     }
 
     private void setAdaptor() {
@@ -120,15 +118,48 @@ public class NewTaskActivity extends AppCompatActivity {
         taskRecyclerView.setAdapter(adapter);
     }
 
-    private void setTaskInfo(String[] stringArray){
-        if (stringArray.length > 0){
-            for (String s : stringArray) {
-                taskList.add(new TaskCategory('\u25cf' + "    " + s));
+    private void setTaskInfo(List<String> DBTaskList){
+        taskList = new ArrayList<>();
+        for (int index=0; index<DBTaskList.size(); index++){
+            taskList.add(new TaskCategory('\u25cf' + "    " + DBTaskList.get(index)));
+        }
+        setAdaptor();
+    }
+
+
+    private void setVisibilityMode(boolean newTaskMode){
+        if(newTaskMode){
+            newCategoryEditText.setVisibility(View.VISIBLE);
+            taskEditText.setVisibility(View.VISIBLE);
+            newCategoryTextView.setVisibility(View.GONE);
+            taskRecyclerView.setVisibility(View.GONE);
+        }
+        else{
+            newCategoryEditText.setVisibility(View.GONE);
+            taskEditText.setVisibility(View.GONE);
+            newCategoryTextView.setVisibility(View.VISIBLE);
+            taskRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setTextForTextViews(){
+        if (!MainActivity.currentCategoryString.equals(""))  {
+            newCategoryEditText.setText(MainActivity.currentCategoryString);
+            newCategoryTextView.setText(MainActivity.currentCategoryString);
+            List<String> DBTasksList = dataBaseHelper.getTasks(MainActivity.currentCategoryString);
+            String editTextString = "";
+            for(int index=0;index<DBTasksList.size();index++){
+                editTextString = editTextString + DBTasksList.get(index) + "\n";
             }
+            taskEditText.setText(editTextString);
+            setTaskInfo(DBTasksList);
         }
     }
 
 
-
+    public void launchDisplayTaskActivity(View view){
+        // TODO
+        Toast.makeText(this, "Animation TODO", Toast.LENGTH_SHORT).show();
+    }
 
 }
