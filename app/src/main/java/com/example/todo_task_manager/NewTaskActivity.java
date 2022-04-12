@@ -13,8 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class NewTaskActivity extends AppCompatActivity {
@@ -24,6 +26,7 @@ public class NewTaskActivity extends AppCompatActivity {
     private boolean editVisible = false;
     private ArrayList<TaskCategory> taskList;
     private RecyclerView taskRecyclerView;
+    private DataBaseHelper dataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class NewTaskActivity extends AppCompatActivity {
         newCategoryTextView = findViewById(R.id.taskCategoryTextView);
         taskEditText = findViewById(R.id.editTextTaskList);
         taskRecyclerView = findViewById(R.id.TaskListRecyclerView);
+        dataBaseHelper = new DataBaseHelper(this);
 
         initializeElementVisibility();
     }
@@ -97,6 +101,14 @@ public class NewTaskActivity extends AppCompatActivity {
         taskList = new ArrayList<>();
         String[] taskArray =  taskText.split("\n",20);
         setTaskInfo(taskArray);
+
+        // INSERTING DATA INTO DATABASE
+        if ((taskCategoryText.length() >1) & (taskText.length() > 1)) {
+            for (int index=0; index< taskArray.length; index++){
+                TaskModel taskModel = new TaskModel(-1, taskArray[index], taskCategoryText, false, false);
+                boolean status = dataBaseHelper.insertData(taskModel);
+            }
+        }
 
     }
 
