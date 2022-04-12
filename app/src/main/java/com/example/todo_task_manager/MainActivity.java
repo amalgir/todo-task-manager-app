@@ -18,6 +18,7 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<TaskCategory> taskCategoryList;
     private RecyclerView recyclerView;
+    DataBaseHelper dataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.MainToolbar);
         setSupportActionBar(toolbar);
+        dataBaseHelper = new DataBaseHelper(this);
 
         recyclerView = findViewById(R.id.recyclerView1);
         taskCategoryList = new ArrayList<>();
@@ -44,10 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTaskCategoryInfo(){
-        // TODO Dummy data
-        for( int i=0;i<20;i++){
-            taskCategoryList.add(new TaskCategory("Dummy task: " + String.valueOf(i+1)));
-        }
+        taskCategoryList = (ArrayList<TaskCategory>) dataBaseHelper.getTaskCategories();
     }
 
     private void dragAndDropFunctionality(){

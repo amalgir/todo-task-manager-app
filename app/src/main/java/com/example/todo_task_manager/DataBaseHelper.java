@@ -35,6 +35,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
+
+    /****************************************************************
+    FunctionName    : insertData
+    Description     : Inserts tasks data into database
+    InputParameters : TaskModel
+    Return          : boolean
+    *******************************************************************/
+
     public boolean insertData(TaskModel taskModel){
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -54,6 +62,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return insertStatus != -1;
     }
 
+
+    /****************************************************************
+    FunctionName    : getAllTasksData
+    Description     : Get all data from the tasks table
+    InputParameters :
+    Return          : List<TaskModel>
+    ********************************************************************/
 
     public List<TaskModel> getAllTasksData(){
         List<TaskModel> returnList = new ArrayList<>();
@@ -79,4 +94,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+
+    /****************************************************************
+     FunctionName    : getTaskCategories
+     Description     : Returns task categories from data base
+     InputParameters :
+     Return          : List<TaskCategory>
+     ********************************************************************/
+
+    public List<TaskCategory> getTaskCategories(){
+        List<TaskCategory> taskCategoryList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        String queryString = String.format("SELECT DISTINCT %s FROM %s", COLUMN_TASK_CATEGORY, TASKS_TABLE);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        if (cursor.moveToFirst()){
+            do{
+                taskCategoryList.add(new TaskCategory(cursor.getString(0)));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return taskCategoryList;
+    }
 }
