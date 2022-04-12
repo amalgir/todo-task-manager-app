@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 int toPosition = target.getAdapterPosition();
 
                 Collections.swap(taskCategoryList, fromPosition, toPosition);
+                dataBaseHelper.updateCategoryOrder(taskCategoryList);
                 recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
                 return false;
             }

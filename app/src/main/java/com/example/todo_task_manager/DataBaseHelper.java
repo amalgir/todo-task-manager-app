@@ -1,5 +1,6 @@
 package com.example.todo_task_manager;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TASK_NAME = "TASK_NAME";
     public static final String COLUMN_TASK_STATUS = "TASK_STATUS";
     public static final String COLUMN_TASK_URGENCY = "TASK_URGENCY";
+    public static final String COLUMN_CATEGORY_RANK = "CATEGORY_RANK";
 
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -26,7 +28,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableString = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_CATEGORY + " TEXT NOT NULL, " + COLUMN_TASK_NAME + " TEXT UNIQUE, " + COLUMN_TASK_STATUS + " BOOL, " + COLUMN_TASK_URGENCY + " BOOL)";
+        String createTableString = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_CATEGORY + " TEXT NOT NULL, " + COLUMN_TASK_NAME + " TEXT UNIQUE, " + COLUMN_TASK_STATUS + " BOOL, " + COLUMN_TASK_URGENCY + " BOOL, "+COLUMN_CATEGORY_RANK+" INTEGER NOT NULL DEFAULT 0)";
         sqLiteDatabase.execSQL(createTableString);
     }
 
@@ -105,7 +107,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public List<TaskCategory> getTaskCategories(){
         List<TaskCategory> taskCategoryList = new ArrayList<>();
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        String queryString = String.format("SELECT DISTINCT %s FROM %s", COLUMN_TASK_CATEGORY, TASKS_TABLE);
+        String queryString = String.format("SELECT DISTINCT %s FROM %s ORDER BY %s ASC", COLUMN_TASK_CATEGORY, TASKS_TABLE, COLUMN_CATEGORY_RANK);
         Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
         if (cursor.moveToFirst()){
             do{
@@ -117,4 +119,36 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
         return taskCategoryList;
     }
+
+
+    /****************************************************************
+     FunctionName    : updateCategoryOrder
+     Description     : Updates the order/rank of the task categories in data base
+     InputParameters : ArrayList<TaskCategory>
+     Return          :
+     ********************************************************************/
+
+    public void updateCategoryOrder(ArrayList<TaskCategory> UITaskCategoryList){
+        // GET ALL CATEGORIES FROM DATABASE
+        List<TaskCategory> DBTaskCategoryList = getTaskCategories();
+        List<String> UITaskCategoryStringList = new ArrayList<String>();
+        for (int i=0;i<UITaskCategoryList.size();i++){
+            UITaskCategoryStringList.add(UITaskCategoryList.get(i).getCategoryName());
+        }
+
+        // CHANGE RANK OF EACH CATEGORY
+        for (int index = 0; index < DBTaskCategoryList.size(); index++){
+            String taskCategoryName = DBTaskCategoryList.get(index).getCategoryName();
+            int rank = (UITaskCategoryStringList.indexOf(taskCategoryName)) + 1;
+
+            // UPDATE RANK OF EACH CATEGORY
+            @SuppressLint("DefaultLocale") String queryString = String.format("UPDATE %s SET %s=%d WHERE %s=\"%s\";",TASKS_TABLE, COLUMN_CATEGORY_RANK, rank, COLUMN_TASK_CATEGORY, taskCategoryName);
+            SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+            sqLiteDatabase.execSQL(queryString);
+            sqLiteDatabase.close();
+        }
+    }
+
+
+
 }
