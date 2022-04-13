@@ -1,17 +1,22 @@
 package com.example.todo_task_manager;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyViewHolder> {
     private ArrayList<TaskCategory> taskCategoriesList;
+    private DataBaseHelper dataBaseHelper;
 
     // Constructor
     public recyclerAdapter(ArrayList<TaskCategory> taskCategoriesList){
@@ -23,7 +28,47 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
         public MyViewHolder(final View view){
             super(view);
-            categoryText = view.findViewById(R.id.taskCategoryTextView);
+            categoryText = view.findViewById(R.id.taskCategoryTextView2);
+            dataBaseHelper = new DataBaseHelper(view.getContext());
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(view.getContext().toString().contains("MainActivity")){
+                        int position = getAdapterPosition();
+                        String currentItemName = taskCategoriesList.get(position).getCategoryName();
+                        MainActivity.newTaskMode = false;
+                        MainActivity.currentCategoryString = currentItemName;
+                        Intent intent = new Intent(view.getContext(), NewTaskActivity.class);
+                        view.getContext().startActivity(intent);
+                    }
+                    else if(view.getContext().toString().contains("NewTaskActivity")){
+                        // CHANGE TASK STATUS WHEN TASK IS CLICKED
+                        int position = getAdapterPosition();
+                        String currentTaskItemName = taskCategoriesList.get(position).getCategoryName();
+                        DataBaseHelper dataBaseHelper = new DataBaseHelper(view.getContext());
+                        dataBaseHelper.toggleTaskStatus(currentTaskItemName);
+                        notifyItemChanged(position);
+                    }
+                }
+            });
+
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if(view.getContext().toString().contains("NewTaskActivity")){
+                        // CHANGE TASK URGENCY WHEN TASK IS LONG CLICKED
+                        int position = getAdapterPosition();
+                        String currentTaskItemName = taskCategoriesList.get(position).getCategoryName();
+                        DataBaseHelper dataBaseHelper = new DataBaseHelper(view.getContext());
+                        dataBaseHelper.toggleTaskUrgency(currentTaskItemName);
+                        notifyItemChanged(position);
+                    }
+                    return true;
+                }
+            });
+
         }
     }
 
@@ -39,6 +84,24 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         String name = taskCategoriesList.get(position).getCategoryName();
         holder.categoryText.setText(name);
 
+        // RECYCLER VIEW IN TASKS SCREEN
+        if(holder.itemView.getContext().toString().contains("NewTaskActivity")){
+            List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);
+            List<String> allTasksWithGivenUrgency = dataBaseHelper.getAllTasksWithGivenUrgency(1);
+            String formattedTaskString = name.split(" {4}")[1];
+
+            if(!allTasksWithGivenStatus.contains(formattedTaskString)){
+                if(allTasksWithGivenUrgency.contains(formattedTaskString)){
+                    holder.categoryText.setTextColor(Color.parseColor("#FF4C30"));
+                }
+                else{
+                    holder.categoryText.setTextColor(Color.WHITE);
+                }
+            }
+            else{
+                holder.categoryText.setTextColor(Color.GRAY);
+            }
+        }
     }
 
     @Override

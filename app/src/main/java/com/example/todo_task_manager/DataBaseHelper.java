@@ -151,10 +151,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     /****************************************************************
-     FunctionName    :
-     Description     :
-     InputParameters :
-     Return          :
+     FunctionName    : getTasks
+     Description     : Fetch all tasks of a particular task category
+     InputParameters : String
+     Return          : List<String>
      ********************************************************************/
 
     public List<String> getTasks(String taskCategoryString){
@@ -174,4 +174,106 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+
+    /****************************************************************
+     FunctionName    : toggleTaskStatus
+     Description     : Toggles the task status and updates in data base
+     InputParameters : String, String
+     Return          :
+     ********************************************************************/
+
+    public void toggleTaskStatus(String task){
+        // FORMAT TASK STRING
+        String formattedTaskString = task.split(" {4}")[1];
+
+        // GET CURRENT STATUS
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String getQueryString = String.format("SELECT %s FROM %s WHERE %s=\"%s\"" , COLUMN_TASK_STATUS, TASKS_TABLE,  COLUMN_TASK_NAME, formattedTaskString);
+        Cursor cursor = sqLiteDatabase.rawQuery(getQueryString, null);
+        cursor.moveToFirst();
+        int resultStatus = cursor.getInt(0);
+        cursor.close();
+
+        // TOGGLE AND UPDATE IN DATABASE
+        int toggleStatus = (resultStatus==1)? 0:1;
+        @SuppressLint("DefaultLocale") String queryString = String.format("UPDATE %s SET %s=%d WHERE %s=\"%s\"",TASKS_TABLE, COLUMN_TASK_STATUS, toggleStatus, COLUMN_TASK_NAME, formattedTaskString);
+        sqLiteDatabase.execSQL(queryString);
+        sqLiteDatabase.close();
+    }
+
+
+    /****************************************************************
+     FunctionName    : getAllTasksWithGivenStatus
+     Description     : Returns all tasks with a particular given task status value
+     InputParameters : int
+     Return          : List<String>
+     ********************************************************************/
+
+    public List<String> getAllTasksWithGivenStatus(int taskStatus){
+        List<String> returnList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("SELECT %s FROM %s WHERE %s=%d", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_STATUS, taskStatus);
+        System.out.println("GET TASK STATUS: " + queryString);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        if (cursor.moveToFirst()){
+            do{
+                returnList.add(cursor.getString(0));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnList;
+    }
+
+
+    /****************************************************************
+     FunctionName    : getAllTasksWithGivenUrgency
+     Description     : Returns all tasks with a particular given task urgency value
+     InputParameters : int
+     Return          : List<String>
+     ********************************************************************/
+
+    public List<String> getAllTasksWithGivenUrgency(int taskUrgency){
+        List<String> returnList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("SELECT %s FROM %s WHERE %s=%d", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_URGENCY, taskUrgency);
+        System.out.println("GET TASK STATUS: " + queryString);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        if (cursor.moveToFirst()){
+            do{
+                returnList.add(cursor.getString(0));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnList;
+    }
+
+    /****************************************************************
+     FunctionName    : toggleTaskUrgency
+     Description     : Toggles the task urgency and updates in data base
+     InputParameters : String
+     Return          :
+     ********************************************************************/
+
+    public void toggleTaskUrgency(String task){
+        // FORMAT TASK STRING
+        String formattedTaskString = task.split(" {4}")[1];
+
+        // GET CURRENT STATUS
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String getQueryString = String.format("SELECT %s FROM %s WHERE %s=\"%s\"" , COLUMN_TASK_URGENCY, TASKS_TABLE,  COLUMN_TASK_NAME, formattedTaskString);
+        Cursor cursor = sqLiteDatabase.rawQuery(getQueryString, null);
+        cursor.moveToFirst();
+        int resultStatus = cursor.getInt(0);
+        cursor.close();
+
+        // TOGGLE AND UPDATE IN DATABASE
+        int toggleStatus = (resultStatus==1)? 0:1;
+        @SuppressLint("DefaultLocale") String queryString = String.format("UPDATE %s SET %s=%d WHERE %s=\"%s\"",TASKS_TABLE, COLUMN_TASK_URGENCY, toggleStatus, COLUMN_TASK_NAME, formattedTaskString);
+        sqLiteDatabase.execSQL(queryString);
+        sqLiteDatabase.close();
+    }
 }

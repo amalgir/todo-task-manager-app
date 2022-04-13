@@ -9,7 +9,7 @@
     android:foreground="?attr/selectableItemBackground">
 
     <TextView
-        android:id="@+id/taskCategoryTextView"
+        android:id="@+id/taskCategoryTextView2"
         android:layout_width="295dp"
         android:layout_height="34dp"
         android:layout_marginStart="54dp"
@@ -17,7 +17,6 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="7dp"
         android:text="Task Category"
-        android:onClick="launchDisplayTaskActivity"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="normal"
