@@ -82,11 +82,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void launchDisplayTaskActivity(View view){
-        MainActivity.newTaskMode = false;
-        currentCategoryString = ((TextView) view).getText().toString();
-        Intent intent = new Intent(this, NewTaskActivity.class);
-        startActivity(intent);
+    // APP EXITS WHEN PRESSED BACK
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 
 

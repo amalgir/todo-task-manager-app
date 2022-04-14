@@ -100,8 +100,12 @@ public class NewTaskActivity extends AppCompatActivity {
         // INSERTING DATA INTO DATABASE
         if ((taskCategoryText.length() >1) & (taskText.length() > 1)) {
             for (int index=0; index< taskArray.length; index++){
-                TaskModel taskModel = new TaskModel(-1, taskArray[index], taskCategoryText, false, false);
-                boolean status = dataBaseHelper.insertData(taskModel);
+                // TO AVOID CREATION OF EMPTY TASK
+                String spaceRemovedString = taskArray[index].replaceAll("\\s", "");
+                if(spaceRemovedString.length() > 1){
+                    TaskModel taskModel = new TaskModel(-1, taskArray[index], taskCategoryText, false, false);
+                    boolean status = dataBaseHelper.insertData(taskModel);
+                }
             }
         }
 
@@ -156,10 +160,10 @@ public class NewTaskActivity extends AppCompatActivity {
         }
     }
 
-
-    public void launchDisplayTaskActivity(View view){
-        // TODO
-        Toast.makeText(this, "Animation TODO", Toast.LENGTH_SHORT).show();
+    // RETURNS TO MAIN ACTIVITY WHEN PRESSED BACK
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
-
 }
