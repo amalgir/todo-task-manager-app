@@ -87,23 +87,26 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
         // RECYCLER VIEW IN TASKS SCREEN
         if(holder.itemView.getContext().toString().contains("NewTaskActivity")){
-            List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);
-            List<String> allTasksWithGivenUrgency = dataBaseHelper.getAllTasksWithGivenUrgency(1);
-            String formattedTaskString = name.split(" {4}")[1];
+            try {
+                List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);
+                List<String> allTasksWithGivenUrgency = dataBaseHelper.getAllTasksWithGivenUrgency(1);
+                String formattedTaskString = name.split(" {4}")[1];
 
-            if(!allTasksWithGivenStatus.contains(formattedTaskString)){
-                if(allTasksWithGivenUrgency.contains(formattedTaskString)){
-                    holder.categoryText.setTextColor(Color.parseColor("#FF4C30"));
-                    holder.categoryText.setPaintFlags( holder.categoryText.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-                }
-                else{
-                    holder.categoryText.setTextColor(Color.WHITE);
-                    holder.categoryText.setPaintFlags( holder.categoryText.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                if (!allTasksWithGivenStatus.contains(formattedTaskString)) {
+                    if (allTasksWithGivenUrgency.contains(formattedTaskString)) {
+                        holder.categoryText.setTextColor(Color.parseColor("#FF4C30"));
+                        holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    } else {
+                        holder.categoryText.setTextColor(Color.WHITE);
+                        holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    }
+                } else {
+                    holder.categoryText.setTextColor(Color.GRAY);
+                    holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
             }
-            else{
-                holder.categoryText.setTextColor(Color.GRAY);
-                holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            catch (Exception e){
+                System.out.println("EXCEPTION: " + e.toString());
             }
         }
     }

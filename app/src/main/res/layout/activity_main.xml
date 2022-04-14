@@ -9,8 +9,8 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/MainToolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="391dp"
+        android:layout_height="41dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="646dp"
         android:background="?attr/colorPrimary"
@@ -18,31 +18,70 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.034">
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="casual"
-            android:text="@string/app_name"
+            android:text="@string/app_name2"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:gravity="center_horizontal|center_vertical"
+            android:textColor="@color/dark_white1"
             android:textSize="22sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView1"
-        android:layout_width="396dp"
-        android:layout_height="655dp"
-        android:layout_marginTop="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="398dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="7dp"
+        android:background="@color/dark_gray"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MainToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/MainToolbar">
+
+        <Button
+            android:id="@+id/changeModeButton"
+            android:layout_width="214dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Personal"
+            android:textAllCaps="false"
+            android:textColor="@color/yellow3"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/progressTextView"
+            android:layout_width="181dp"
+            android:layout_height="match_parent"
+            android:fontFamily="monospace"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="1/36 (3%)"
+            android:textColor="@color/green"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView1"
+        android:layout_width="410dp"
+        android:layout_height="656dp"
+        android:layout_marginTop="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <android.widget.Button
         android:id="@+id/plusButton"
