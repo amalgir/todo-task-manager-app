@@ -56,7 +56,7 @@
             android:clickable="true"
             android:focusable="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Personal"
+            android:onClick="changeModeButtonClick"
             android:textAllCaps="false"
             android:textColor="@color/yellow3"
             android:textSize="18sp"

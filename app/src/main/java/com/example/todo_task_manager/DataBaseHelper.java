@@ -21,14 +21,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TASK_STATUS = "TASK_STATUS";
     public static final String COLUMN_TASK_URGENCY = "TASK_URGENCY";
     public static final String COLUMN_CATEGORY_RANK = "CATEGORY_RANK";
+    public static final String COLUMN_TASK_MODE = "TASK_MODE";
+    public Context currentContext;
 
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
+        currentContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableString = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_CATEGORY + " TEXT NOT NULL, " + COLUMN_TASK_NAME + " TEXT UNIQUE, " + COLUMN_TASK_STATUS + " BOOL, " + COLUMN_TASK_URGENCY + " BOOL, "+COLUMN_CATEGORY_RANK+" INTEGER NOT NULL DEFAULT 0)";
+        String createTableString = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_CATEGORY + " TEXT NOT NULL, " + COLUMN_TASK_NAME + " TEXT UNIQUE, " + COLUMN_TASK_STATUS + " BOOL, " + COLUMN_TASK_URGENCY + " BOOL, "+COLUMN_CATEGORY_RANK+" INTEGER NOT NULL DEFAULT 0, "+ COLUMN_TASK_MODE +" TEXT NOT NULL)";
         sqLiteDatabase.execSQL(createTableString);
     }
 
@@ -52,6 +55,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_TASK_CATEGORY, taskModel.getTaskCategory());
         cv.put(COLUMN_TASK_STATUS, taskModel.isTaskStatus());
         cv.put(COLUMN_TASK_URGENCY, taskModel.isTaskUrgency());
+        cv.put(COLUMN_TASK_MODE, SharedPreferenceHelper.getModeData(currentContext));
         long insertStatus;
         try{
             insertStatus = sqLiteDatabase.insertOrThrow(TASKS_TABLE, null, cv);
@@ -107,7 +111,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public List<TaskCategory> getTaskCategories(){
         List<TaskCategory> taskCategoryList = new ArrayList<>();
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        String queryString = String.format("SELECT DISTINCT %s FROM %s ORDER BY %s ASC", COLUMN_TASK_CATEGORY, TASKS_TABLE, COLUMN_CATEGORY_RANK);
+        String queryString = String.format("SELECT DISTINCT %s FROM %s WHERE %s=\"%s\" ORDER BY %s ASC", COLUMN_TASK_CATEGORY, TASKS_TABLE, COLUMN_TASK_MODE, SharedPreferenceHelper.getModeData(currentContext), COLUMN_CATEGORY_RANK);
         Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
         if (cursor.moveToFirst()){
             do{

@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.MainToolbar);
         setSupportActionBar(toolbar);
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView1);
         taskCategoryList = new ArrayList<>();
+        Button button = findViewById(R.id.changeModeButton);
+        button.setText(SharedPreferenceHelper.getModeData(this));
 
         setTaskCategoryInfo();
         setAdaptor();
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    // FOR PLUS BUTTON
     public void launchNewTaskActivity(View view){
         MainActivity.newTaskMode = true;
         Intent intent = new Intent(this, NewTaskActivity.class);
@@ -89,4 +93,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /****************************************************************
+     FunctionName    : changeModeButtonClick
+     Description     : selects different mode when mode change button clicked
+     InputParameters : View
+     Return          :
+     *******************************************************************/
+
+    public void changeModeButtonClick(View view){
+        Button button = findViewById(R.id.changeModeButton);
+        String buttonText = button.getText().toString();
+        switch(buttonText){
+            case Constants.PERSONAL:
+                // CAREER MODE
+                button.setText(Constants.CAREER);
+                SharedPreferenceHelper.editModeData(this, Constants.CAREER);
+                break;
+
+            case Constants.CAREER:
+                // PERSONAL MODE
+                button.setText(Constants.PERSONAL);
+                SharedPreferenceHelper.editModeData(this, Constants.PERSONAL);
+                break;
+        }
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
 }
