@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     // FOR PLUS BUTTON
     public void launchNewTaskActivity(View view){
+        SharedPreferenceHelper.editLastEditedCategory(this, "");
         MainActivity.newTaskMode = true;
         Intent intent = new Intent(this, NewTaskActivity.class);
         startActivity(intent);

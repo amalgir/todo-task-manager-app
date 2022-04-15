@@ -352,4 +352,34 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
         return returnList;
     }
+
+
+    /****************************************************************
+     FunctionName    : deleteTask
+     Description     : Deletes task from Data base
+     InputParameters : String
+     Return          :
+     ********************************************************************/
+
+    public void deleteTask(String task){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("DELETE FROM %s WHERE %s=\"%s\";", TASKS_TABLE, COLUMN_TASK_NAME, task);
+        sqLiteDatabase.execSQL(queryString);
+        sqLiteDatabase.close();
+    }
+
+
+    /****************************************************************
+     FunctionName    : updateCategories
+     Description     : Update all task category text
+     InputParameters : String
+     Return          :
+     ********************************************************************/
+
+    public void updateCategories(String oldCategory, String newCategory){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("UPDATE %s SET %s=\"%s\" WHERE %s=\"%s\"", TASKS_TABLE, COLUMN_TASK_CATEGORY, newCategory, COLUMN_TASK_CATEGORY, oldCategory);
+        sqLiteDatabase.execSQL(queryString);
+        sqLiteDatabase.close();
+    }
 }
