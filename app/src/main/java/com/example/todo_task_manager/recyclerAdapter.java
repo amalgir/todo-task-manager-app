@@ -97,7 +97,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
                 if (!allTasksWithGivenStatus.contains(formattedTaskString)) {
                     if (allTasksWithGivenUrgency.contains(formattedTaskString)) {
-                        holder.categoryText.setTextColor(Color.parseColor("#FF4C30"));
+                        holder.categoryText.setTextColor(Color.GREEN);
                         holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     } else {
                         holder.categoryText.setTextColor(Color.WHITE);
