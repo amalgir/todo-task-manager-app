@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -37,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
         taskCategoryList = new ArrayList<>();
         Button button = findViewById(R.id.changeModeButton);
         button.setText(SharedPreferenceHelper.getModeData(this));
+
+        // SETTING TASK PROGRESS STATS
+        int[] progressStatsArray = dataBaseHelper.getTaskProgressStats();
+        float percentage = ((float)progressStatsArray[1]/(float)progressStatsArray[0])*100;
+        @SuppressLint("DefaultLocale") String progressString = String.format("%d/%d  (%d%s)",progressStatsArray[1], progressStatsArray[0], Math.round(percentage), "%");
+        TextView progressText = findViewById(R.id.progressTextView);
+        progressText.setText(progressString);
 
         setTaskCategoryInfo();
         setAdaptor();

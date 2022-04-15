@@ -68,7 +68,6 @@
             android:layout_height="match_parent"
             android:fontFamily="monospace"
             android:gravity="center_vertical|center_horizontal"
-            android:text="1/36 (3%)"
             android:textColor="@color/green"
             android:textSize="18sp" />
     </LinearLayout>

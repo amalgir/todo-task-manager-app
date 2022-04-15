@@ -284,13 +284,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     /****************************************************************
      FunctionName    : getToDoTasksCount
-     Description     : Returns
+     Description     : Returns number of to do tasks of respective task category
      InputParameters : String
      Return          : int
      ********************************************************************/
 
     public int getToDoTasksCount(String taskCategoryName){
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         String queryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\" AND %s=0", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_CATEGORY, taskCategoryName, COLUMN_TASK_STATUS);
         Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
         cursor.moveToFirst();
@@ -298,5 +298,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         sqLiteDatabase.close();
         return returnCount;
+    }
+
+
+    /****************************************************************
+     FunctionName    : getTaskProgressStats
+     Description     : get total tasks count and completed tasks count for respective mode
+     InputParameters :
+     Return          : int[]
+     ********************************************************************/
+
+    public int[] getTaskProgressStats(){
+        String modeValue = SharedPreferenceHelper.getModeData(currentContext);
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+
+        // GET TOTAL TASKS COUNT
+        String totalTaskQueryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\"", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_MODE, modeValue);
+        Cursor cursor = sqLiteDatabase.rawQuery(totalTaskQueryString, null);
+        cursor.moveToFirst();
+        int totalTaskCount = cursor.getInt(0);
+        cursor.close();
+
+        // GET COMPLETED TASKS COUNT
+        String completedTaskQueryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\" AND %s=1", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_MODE, modeValue, COLUMN_TASK_STATUS);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(completedTaskQueryString, null);
+        cursor2.moveToFirst();
+        int completedTaskCount = cursor2.getInt(0);
+        cursor2.close();
+        return new int[]{totalTaskCount, completedTaskCount};
     }
 }
