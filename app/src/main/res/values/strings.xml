@@ -6,4 +6,5 @@
     <string name="TaskHint">Enter Task..</string>
     <string name="edit">Edit</string>
     <string name="save">Save</string>
+    <string name="to_do_urgent_mode">🔥🔥 To Do Urgent Mode 🔥🔥</string>
 </resources>

@@ -327,4 +327,29 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor2.close();
         return new int[]{totalTaskCount, completedTaskCount};
     }
+
+
+    /****************************************************************
+     FunctionName    : getUrgentTasks
+     Description     : Fetch all urgent tasks
+     InputParameters :
+     Return          : List<String>
+     ********************************************************************/
+
+    public List<String> getUrgentTasks(){
+        List<String> returnList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("SELECT %s FROM %s WHERE %s=%d", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_URGENCY, 1);
+        System.out.println("GET URGENT TASKS: " + queryString);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        if (cursor.moveToFirst()){
+            do{
+                returnList.add(cursor.getString(0));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnList;
+    }
 }

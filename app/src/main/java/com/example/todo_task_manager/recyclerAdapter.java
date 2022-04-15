@@ -46,7 +46,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                         Intent intent = new Intent(view.getContext(), NewTaskActivity.class);
                         view.getContext().startActivity(intent);
                     }
-                    else if(view.getContext().toString().contains("NewTaskActivity")){
+                    else if((view.getContext().toString().contains("NewTaskActivity"))|(view.getContext().toString().contains("UrgentActivity"))){
                         // CHANGE TASK STATUS WHEN TASK IS CLICKED
                         int position = getAdapterPosition();
                         String currentTaskItemName = taskCategoriesList.get(position).getCategoryName();
@@ -60,7 +60,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    if(view.getContext().toString().contains("NewTaskActivity")){
+                    if((view.getContext().toString().contains("NewTaskActivity"))|(view.getContext().toString().contains("UrgentActivity"))){
                         // CHANGE TASK URGENCY WHEN TASK IS LONG CLICKED
                         int position = getAdapterPosition();
                         String currentTaskItemName = taskCategoriesList.get(position).getCategoryName();
@@ -88,7 +88,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         holder.categoryText.setText(name);
 
         // RECYCLER VIEW IN TASKS SCREEN
-        if(holder.itemView.getContext().toString().contains("NewTaskActivity")){
+        if((holder.itemView.getContext().toString().contains("NewTaskActivity"))|(holder.itemView.getContext().toString().contains("UrgentActivity"))){
             holder.circleCounter.setVisibility(View.GONE);
             try {
                 List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);

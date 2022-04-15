@@ -127,4 +127,17 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+
+    /****************************************************************
+     FunctionName    : launchUrgentModeActivity
+     Description     : Function to launch urgent activity
+     InputParameters : View
+     Return          :
+     *******************************************************************/
+
+    public void launchUrgentModeActivity(View view){
+        Intent intent = new Intent(this, UrgentActivity.class);
+        startActivity(intent);
+    }
 }
