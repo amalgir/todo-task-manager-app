@@ -26,10 +26,12 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView categoryText;
+        private TextView circleCounter;
 
         public MyViewHolder(final View view){
             super(view);
             categoryText = view.findViewById(R.id.taskCategoryTextView2);
+            circleCounter = view.findViewById(R.id.circleCounter);
             dataBaseHelper = new DataBaseHelper(view.getContext());
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +89,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
         // RECYCLER VIEW IN TASKS SCREEN
         if(holder.itemView.getContext().toString().contains("NewTaskActivity")){
+            holder.circleCounter.setVisibility(View.GONE);
             try {
                 List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);
                 List<String> allTasksWithGivenUrgency = dataBaseHelper.getAllTasksWithGivenUrgency(1);
@@ -108,6 +111,10 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             catch (Exception e){
                 System.out.println("EXCEPTION: " + e.toString());
             }
+        }
+        else if(holder.itemView.getContext().toString().contains("MainActivity")){
+            int toDoTaskCount = dataBaseHelper.getToDoTasksCount(name);
+            holder.circleCounter.setText(String.valueOf(toDoTaskCount));
         }
     }
 

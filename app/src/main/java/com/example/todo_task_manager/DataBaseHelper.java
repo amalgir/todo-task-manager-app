@@ -280,4 +280,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(queryString);
         sqLiteDatabase.close();
     }
+
+
+    /****************************************************************
+     FunctionName    : getToDoTasksCount
+     Description     : Returns
+     InputParameters : String
+     Return          : int
+     ********************************************************************/
+
+    public int getToDoTasksCount(String taskCategoryName){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String queryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\" AND %s=0", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_CATEGORY, taskCategoryName, COLUMN_TASK_STATUS);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        cursor.moveToFirst();
+        int returnCount = cursor.getInt(0);
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnCount;
+    }
 }
