@@ -34,6 +34,7 @@ public class NewTaskActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         setContentView(R.layout.activity_new_task);
         newTaskMode = MainActivity.newTaskMode;
 
@@ -74,6 +75,8 @@ public class NewTaskActivity extends AppCompatActivity {
         if (itemId == R.id.editMenu){
             setVisibilityMode(true);
             editVisible = false;
+
+            SharedPreferenceHelper.editLastEditedCategory(this, newCategoryTextView.getText().toString());
             invalidateOptionsMenu();
         }
         else if (itemId == R.id.saveMenu){
@@ -96,13 +99,55 @@ public class NewTaskActivity extends AppCompatActivity {
         // Setting tasks in recycler view
         taskList = new ArrayList<>();
         String[] taskArray =  taskText.split("\n",20);
+        String lastEditedCategory = SharedPreferenceHelper.getLastEditedCategory(this);
 
-        // INSERTING DATA INTO DATABASE
-        if ((taskCategoryText.length() >1) & (taskText.length() > 1)) {
+        // INSERTING DATA INTO DATABASE FOR NEW TASK CATEGORY
+        if ((taskCategoryText.length() >1) & (taskText.length() > 1) & (lastEditedCategory.equals(""))) {
             for (int index=0; index< taskArray.length; index++){
-                TaskModel taskModel = new TaskModel(-1, taskArray[index], taskCategoryText, false, false);
-                boolean status = dataBaseHelper.insertData(taskModel);
+                // TO AVOID CREATION OF EMPTY TASK
+                String spaceRemovedString = taskArray[index].replaceAll("\\s", "");
+                if(spaceRemovedString.length() > 1){
+                    TaskModel taskModel = new TaskModel(-1, taskArray[index], taskCategoryText, false, false);
+                    boolean status = dataBaseHelper.insertData(taskModel);
+                }
             }
+        }
+
+        // UPDATING DATABASE FOR ALREADY EXISTING TASK CATEGORY
+        if(!lastEditedCategory.equals("")){
+            // GET DB TASKS
+            List<String> DBTasks = dataBaseHelper.getTasks(lastEditedCategory);
+
+            // GET UI TASKS
+            List<String> UITasks = new ArrayList<String>();
+            for (String s : taskArray) {
+                // TO AVOID CREATION OF EMPTY TASK
+                String spaceRemovedString = s.replaceAll("\\s", "");
+                if (spaceRemovedString.length() > 1) {
+                    UITasks.add(s);
+                }
+            }
+
+            // TASKS IN UI & NOT IN DB --> INSERT TO DB
+            for(int index=0; index<UITasks.size(); index++){
+                if(!DBTasks.contains(UITasks.get(index))){
+                    TaskModel taskModel = new TaskModel(-1, UITasks.get(index), lastEditedCategory, false, false);
+                    boolean status = dataBaseHelper.insertData(taskModel);
+                }
+            }
+
+            // TASKS NOT IN UI, BUT IN DB --> DELETE FROM DB
+            for(int index=0; index<DBTasks.size(); index++){
+                if(!UITasks.contains(DBTasks.get(index))){
+                    dataBaseHelper.deleteTask(DBTasks.get(index));
+                }
+            }
+        }
+
+        // TASK CATEGORY CHANGED
+        String spaceRemovedString = taskCategoryText.replaceAll("\\s", "");
+        if((!lastEditedCategory.equals(taskCategoryText)) & spaceRemovedString.length() > 1){
+            dataBaseHelper.updateCategories(lastEditedCategory, taskCategoryText);
         }
 
         // FETCHING DATA FROM DATABASE AND DISPLAYING
@@ -156,10 +201,10 @@ public class NewTaskActivity extends AppCompatActivity {
         }
     }
 
-
-    public void launchDisplayTaskActivity(View view){
-        // TODO
-        Toast.makeText(this, "Animation TODO", Toast.LENGTH_SHORT).show();
+    // RETURNS TO MAIN ACTIVITY WHEN PRESSED BACK
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
-
 }

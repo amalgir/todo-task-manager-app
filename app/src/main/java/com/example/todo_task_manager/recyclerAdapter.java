@@ -26,10 +26,12 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView categoryText;
+        private TextView circleCounter;
 
         public MyViewHolder(final View view){
             super(view);
             categoryText = view.findViewById(R.id.taskCategoryTextView2);
+            circleCounter = view.findViewById(R.id.circleCounter);
             dataBaseHelper = new DataBaseHelper(view.getContext());
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -44,7 +46,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
                         Intent intent = new Intent(view.getContext(), NewTaskActivity.class);
                         view.getContext().startActivity(intent);
                     }
-                    else if(view.getContext().toString().contains("NewTaskActivity")){
+                    else if((view.getContext().toString().contains("NewTaskActivity"))|(view.getContext().toString().contains("UrgentActivity"))){
                         // CHANGE TASK STATUS WHEN TASK IS CLICKED
                         int position = getAdapterPosition();
                         String currentTaskItemName = taskCategoriesList.get(position).getCategoryName();
@@ -58,7 +60,7 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    if(view.getContext().toString().contains("NewTaskActivity")){
+                    if((view.getContext().toString().contains("NewTaskActivity"))|(view.getContext().toString().contains("UrgentActivity"))){
                         // CHANGE TASK URGENCY WHEN TASK IS LONG CLICKED
                         int position = getAdapterPosition();
                         String currentTaskItemName = taskCategoriesList.get(position).getCategoryName();
@@ -86,25 +88,33 @@ public class recyclerAdapter extends RecyclerView.Adapter<recyclerAdapter.MyView
         holder.categoryText.setText(name);
 
         // RECYCLER VIEW IN TASKS SCREEN
-        if(holder.itemView.getContext().toString().contains("NewTaskActivity")){
-            List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);
-            List<String> allTasksWithGivenUrgency = dataBaseHelper.getAllTasksWithGivenUrgency(1);
-            String formattedTaskString = name.split(" {4}")[1];
+        if((holder.itemView.getContext().toString().contains("NewTaskActivity"))|(holder.itemView.getContext().toString().contains("UrgentActivity"))){
+            holder.circleCounter.setVisibility(View.GONE);
+            try {
+                List<String> allTasksWithGivenStatus = dataBaseHelper.getAllTasksWithGivenStatus(1);
+                List<String> allTasksWithGivenUrgency = dataBaseHelper.getAllTasksWithGivenUrgency(1);
+                String formattedTaskString = name.split(" {4}")[1];
 
-            if(!allTasksWithGivenStatus.contains(formattedTaskString)){
-                if(allTasksWithGivenUrgency.contains(formattedTaskString)){
-                    holder.categoryText.setTextColor(Color.parseColor("#FF4C30"));
-                    holder.categoryText.setPaintFlags( holder.categoryText.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-                }
-                else{
-                    holder.categoryText.setTextColor(Color.WHITE);
-                    holder.categoryText.setPaintFlags( holder.categoryText.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                if (!allTasksWithGivenStatus.contains(formattedTaskString)) {
+                    if (allTasksWithGivenUrgency.contains(formattedTaskString)) {
+                        holder.categoryText.setTextColor(Color.GREEN);
+                        holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    } else {
+                        holder.categoryText.setTextColor(Color.WHITE);
+                        holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    }
+                } else {
+                    holder.categoryText.setTextColor(Color.GRAY);
+                    holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
             }
-            else{
-                holder.categoryText.setTextColor(Color.GRAY);
-                holder.categoryText.setPaintFlags(holder.categoryText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            catch (Exception e){
+                System.out.println("EXCEPTION: " + e.toString());
             }
+        }
+        else if(holder.itemView.getContext().toString().contains("MainActivity")){
+            int toDoTaskCount = dataBaseHelper.getToDoTasksCount(name);
+            holder.circleCounter.setText(String.valueOf(toDoTaskCount));
         }
     }
 

@@ -21,14 +21,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TASK_STATUS = "TASK_STATUS";
     public static final String COLUMN_TASK_URGENCY = "TASK_URGENCY";
     public static final String COLUMN_CATEGORY_RANK = "CATEGORY_RANK";
+    public static final String COLUMN_TASK_MODE = "TASK_MODE";
+    public Context currentContext;
 
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
+        currentContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableString = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_CATEGORY + " TEXT NOT NULL, " + COLUMN_TASK_NAME + " TEXT UNIQUE, " + COLUMN_TASK_STATUS + " BOOL, " + COLUMN_TASK_URGENCY + " BOOL, "+COLUMN_CATEGORY_RANK+" INTEGER NOT NULL DEFAULT 0)";
+        String createTableString = "CREATE TABLE IF NOT EXISTS " + TASKS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TASK_CATEGORY + " TEXT NOT NULL, " + COLUMN_TASK_NAME + " TEXT UNIQUE, " + COLUMN_TASK_STATUS + " BOOL, " + COLUMN_TASK_URGENCY + " BOOL, "+COLUMN_CATEGORY_RANK+" INTEGER NOT NULL DEFAULT 0, "+ COLUMN_TASK_MODE +" TEXT NOT NULL)";
         sqLiteDatabase.execSQL(createTableString);
     }
 
@@ -52,6 +55,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_TASK_CATEGORY, taskModel.getTaskCategory());
         cv.put(COLUMN_TASK_STATUS, taskModel.isTaskStatus());
         cv.put(COLUMN_TASK_URGENCY, taskModel.isTaskUrgency());
+        cv.put(COLUMN_TASK_MODE, SharedPreferenceHelper.getModeData(currentContext));
         long insertStatus;
         try{
             insertStatus = sqLiteDatabase.insertOrThrow(TASKS_TABLE, null, cv);
@@ -107,7 +111,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public List<TaskCategory> getTaskCategories(){
         List<TaskCategory> taskCategoryList = new ArrayList<>();
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-        String queryString = String.format("SELECT DISTINCT %s FROM %s ORDER BY %s ASC", COLUMN_TASK_CATEGORY, TASKS_TABLE, COLUMN_CATEGORY_RANK);
+        String queryString = String.format("SELECT DISTINCT %s FROM %s WHERE %s=\"%s\" ORDER BY %s ASC", COLUMN_TASK_CATEGORY, TASKS_TABLE, COLUMN_TASK_MODE, SharedPreferenceHelper.getModeData(currentContext), COLUMN_CATEGORY_RANK);
         Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
         if (cursor.moveToFirst()){
             do{
@@ -273,6 +277,108 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         // TOGGLE AND UPDATE IN DATABASE
         int toggleStatus = (resultStatus==1)? 0:1;
         @SuppressLint("DefaultLocale") String queryString = String.format("UPDATE %s SET %s=%d WHERE %s=\"%s\"",TASKS_TABLE, COLUMN_TASK_URGENCY, toggleStatus, COLUMN_TASK_NAME, formattedTaskString);
+        sqLiteDatabase.execSQL(queryString);
+        sqLiteDatabase.close();
+    }
+
+
+    /****************************************************************
+     FunctionName    : getToDoTasksCount
+     Description     : Returns number of to do tasks of respective task category
+     InputParameters : String
+     Return          : int
+     ********************************************************************/
+
+    public int getToDoTasksCount(String taskCategoryName){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        String queryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\" AND %s=0", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_CATEGORY, taskCategoryName, COLUMN_TASK_STATUS);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        cursor.moveToFirst();
+        int returnCount = cursor.getInt(0);
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnCount;
+    }
+
+
+    /****************************************************************
+     FunctionName    : getTaskProgressStats
+     Description     : get total tasks count and completed tasks count for respective mode
+     InputParameters :
+     Return          : int[]
+     ********************************************************************/
+
+    public int[] getTaskProgressStats(){
+        String modeValue = SharedPreferenceHelper.getModeData(currentContext);
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+
+        // GET TOTAL TASKS COUNT
+        String totalTaskQueryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\"", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_MODE, modeValue);
+        Cursor cursor = sqLiteDatabase.rawQuery(totalTaskQueryString, null);
+        cursor.moveToFirst();
+        int totalTaskCount = cursor.getInt(0);
+        cursor.close();
+
+        // GET COMPLETED TASKS COUNT
+        String completedTaskQueryString = String.format("SELECT COUNT(%s) FROM %s WHERE %s=\"%s\" AND %s=1", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_MODE, modeValue, COLUMN_TASK_STATUS);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(completedTaskQueryString, null);
+        cursor2.moveToFirst();
+        int completedTaskCount = cursor2.getInt(0);
+        cursor2.close();
+        return new int[]{totalTaskCount, completedTaskCount};
+    }
+
+
+    /****************************************************************
+     FunctionName    : getUrgentTasks
+     Description     : Fetch all urgent tasks
+     InputParameters :
+     Return          : List<String>
+     ********************************************************************/
+
+    public List<String> getUrgentTasks(){
+        List<String> returnList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("SELECT %s FROM %s WHERE %s=%d", COLUMN_TASK_NAME, TASKS_TABLE, COLUMN_TASK_URGENCY, 1);
+        System.out.println("GET URGENT TASKS: " + queryString);
+        Cursor cursor = sqLiteDatabase.rawQuery(queryString, null);
+        if (cursor.moveToFirst()){
+            do{
+                returnList.add(cursor.getString(0));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return returnList;
+    }
+
+
+    /****************************************************************
+     FunctionName    : deleteTask
+     Description     : Deletes task from Data base
+     InputParameters : String
+     Return          :
+     ********************************************************************/
+
+    public void deleteTask(String task){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("DELETE FROM %s WHERE %s=\"%s\";", TASKS_TABLE, COLUMN_TASK_NAME, task);
+        sqLiteDatabase.execSQL(queryString);
+        sqLiteDatabase.close();
+    }
+
+
+    /****************************************************************
+     FunctionName    : updateCategories
+     Description     : Update all task category text
+     InputParameters : String
+     Return          :
+     ********************************************************************/
+
+    public void updateCategories(String oldCategory, String newCategory){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        @SuppressLint("DefaultLocale") String queryString = String.format("UPDATE %s SET %s=\"%s\" WHERE %s=\"%s\"", TASKS_TABLE, COLUMN_TASK_CATEGORY, newCategory, COLUMN_TASK_CATEGORY, oldCategory);
         sqLiteDatabase.execSQL(queryString);
         sqLiteDatabase.close();
     }

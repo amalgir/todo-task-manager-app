@@ -10,20 +10,42 @@
 
     <TextView
         android:id="@+id/taskCategoryTextView2"
-        android:layout_width="295dp"
-        android:layout_height="34dp"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
         android:layout_marginStart="54dp"
         android:layout_marginTop="7dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginBottom="7dp"
+        android:gravity="center_vertical|start"
         android:text="Task Category"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/circleCounter"
+        android:layout_width="32dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="7dp"
+        android:background="@drawable/circlecounterview"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="0"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/taskCategoryTextView2"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.571" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.MainToolbar);
         setSupportActionBar(toolbar);
@@ -34,6 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView1);
         taskCategoryList = new ArrayList<>();
+        Button button = findViewById(R.id.changeModeButton);
+        button.setText(SharedPreferenceHelper.getModeData(this));
+
+        // SETTING TASK PROGRESS STATS
+        int[] progressStatsArray = dataBaseHelper.getTaskProgressStats();
+        float percentage = ((float)progressStatsArray[1]/(float)progressStatsArray[0])*100;
+        @SuppressLint("DefaultLocale") String progressString = String.format("%d/%d  (%d%s)",progressStatsArray[1], progressStatsArray[0], Math.round(percentage), "%");
+        TextView progressText = findViewById(R.id.progressTextView);
+        progressText.setText(progressString);
 
         setTaskCategoryInfo();
         setAdaptor();
@@ -76,18 +87,58 @@ public class MainActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    // FOR PLUS BUTTON
     public void launchNewTaskActivity(View view){
+        SharedPreferenceHelper.editLastEditedCategory(this, "");
         MainActivity.newTaskMode = true;
         Intent intent = new Intent(this, NewTaskActivity.class);
         startActivity(intent);
     }
 
-    public void launchDisplayTaskActivity(View view){
-        MainActivity.newTaskMode = false;
-        currentCategoryString = ((TextView) view).getText().toString();
-        Intent intent = new Intent(this, NewTaskActivity.class);
+    // APP EXITS WHEN PRESSED BACK
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
+
+
+    /****************************************************************
+     FunctionName    : changeModeButtonClick
+     Description     : selects different mode when mode change button clicked
+     InputParameters : View
+     Return          :
+     *******************************************************************/
+
+    public void changeModeButtonClick(View view){
+        Button button = findViewById(R.id.changeModeButton);
+        String buttonText = button.getText().toString();
+        switch(buttonText){
+            case Constants.PERSONAL:
+                // CAREER MODE
+                button.setText(Constants.CAREER);
+                SharedPreferenceHelper.editModeData(this, Constants.CAREER);
+                break;
+
+            case Constants.CAREER:
+                // PERSONAL MODE
+                button.setText(Constants.PERSONAL);
+                SharedPreferenceHelper.editModeData(this, Constants.PERSONAL);
+                break;
+        }
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
 
+    /****************************************************************
+     FunctionName    : launchUrgentModeActivity
+     Description     : Function to launch urgent activity
+     InputParameters : View
+     Return          :
+     *******************************************************************/
+
+    public void launchUrgentModeActivity(View view){
+        Intent intent = new Intent(this, UrgentActivity.class);
+        startActivity(intent);
+    }
 }

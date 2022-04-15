@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">ToDo Task Manager</string>
+    <string name="app_name">To Do</string>
+    <string name="app_name2">To Do ☺</string>
     <string name="plusButtonText">+</string>
     <string name="TaskCategoryHint">Enter Task Title..</string>
     <string name="TaskHint">Enter Task..</string>
     <string name="edit">Edit</string>
     <string name="save">Save</string>
+    <string name="to_do_urgent_mode">🔥🔥 To Do Urgent Mode 🔥🔥</string>
 </resources>
